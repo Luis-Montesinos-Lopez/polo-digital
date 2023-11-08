@@ -33,7 +33,7 @@ app.get(`/carrusel`, (request, response)=>{
 
 app.get(`/loging`, (request,response)=>{
 
-    connection.query(`select * from usuarios where email=${request.query.email} & password=${request.query.password}`, (error,result,fields)=>{
+    connection.query(`select * from usuarios where email="${request.query.email}" and password="${request.query.password}"`, (error,result,fields)=>{
         if(error){
             return console.error(`error: ${error.message}`);
         }
