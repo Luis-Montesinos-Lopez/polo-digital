@@ -84,58 +84,6 @@ app.get(`/login`, (request, response) => {
     );
 });
 
-// app.post(`/registro`, (request, response) => {
-//   console.log(request.body);
-//   /**
-//    * hacer un connection.query insert into usuarios y un insert into empleadosclientes
-//    */
-//   let nuevoEmail = request.body.email;
-//   let nuevoUsuario_Id = 0;
-//   let cliente_Id=0;
-//   connection.query(`select * from usuarios`, (error, result, fields) => {
-//     handleSQLError(response, error, result, (result) => {
-//       for (let i = 0; i < result.length; i++) {
-//         if (result[i].email == nuevoEmail) {
-//           return response.send(`El email ya está en uso`);
-//         }; 
-//       } connection.query(
-//             `insert into usuarios (email,password) values ('${request.body.email}', '${request.body.password}')`,
-//             (error, result, fields) => {
-//               handleSQLError(response, error, result, (result) => {});
-//             }
-//           );
-//       nuevoUsuario_Id = result[result.lenght-1].id+1;
-
-//     });
-//   });
-//   connection.query(`select * from empleadosclientes`,(error, result, fields) => {
-//       handleSQLError(response, error, result, (result) => {
-//         for (let i = 0; i < result.length; i++) {
-//           if (result[i].nombre == request.body.nombre &&
-//             result[i].apellidos == request.body.apellidos &
-//               result[i].dni == request.body.dni){
-//                 return response.send(`Este empleado ya está registrado en la base de datos`);
-//           };
-//         }
-
-//         for(let i=0;i<result.length;i++){
-//             if(result[i].razon_social==request.body.empresa){
-//                 cliente_Id=result[i].id;
-//               } else{
-//                 return response.send(`El cliente introducido no existe`);
-//               }
-//         }
-//         connection.query(`insert into empleadosclientes (nombre, apellidos, dni, telefono, usuario_id, cliente_id) values ('${request.body.nombre}','${request.body.apellidos}','${request.body.dni}','${request.body.telefono}', '${nuevoUsuario_Id}', '${cliente_Id}')`,
-//               (error, result, fields) => {
-//                 handleSQLError(request, error, result, (result) => {
-//                  return response.send({ message: `Registro realizado` });
-//                 });
-//               }
-//             );
-//       });
-//         }
-//     );
-// });
 app.post(`/registro`, (request, response) => {
     console.log(request.body);
     /**
@@ -146,7 +94,7 @@ app.post(`/registro`, (request, response) => {
     let nuevoUsuario_Id = 0;
     let cliente_Id = 0;
     /**
-     * comprobar si el email está en uso
+     * comprobar si el email o el dni está en uso
      */
     connection.query(`select email, dni from usuarios, empleadosclientes where usuarios.email='${nuevoEmail}' or empleadosclientes.dni='${request.body.dni}'`, (error, result, fields) => {
         if (result.length == 0) {
@@ -181,18 +129,6 @@ app.post(`/registro`, (request, response) => {
         }
 
     });
-
-
-
-
-
-
-
-
-
-
-
-
 });
 /**
  * Termina Registros/login--------------------------------------------------------------------------------------------
