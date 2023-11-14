@@ -35,7 +35,7 @@ let = handleSQLError = (response, error, result, callback) => {
  * Endpoints para index-----------------------------------------------------------------------------------------
  */
 app.get(`/carrusel`, (request, response) => {
-    connection.query("select * from eventos", (error, result, fields) => {
+    connection.query(`select eventos.id,eventos.nombre,eventos.tipo,eventos.fecha_inicio,eventos.fecha_fin,eventos.aforo,eventos.evento_imagen,eventos.descripcion,clientes.razon_social as organizador,salas.nombre as sala from eventos,clientes,salas where clientes.id=(select id from clientes where id=eventos.cliente_id) and salas.id=(select id from salas where id =eventos.sala_id)`, (error, result, fields) => {
         handleSQLError(response, error, result, (result) => {
             let total = request.query.total;
             let listaEventos = [];
@@ -46,6 +46,18 @@ app.get(`/carrusel`, (request, response) => {
         });
     });
 });
+// app.get(`/carrusel`, (request, response) => {
+//     connection.query("select * from eventos", (error, result, fields) => {
+//         handleSQLError(response, error, result, (result) => {
+//             let total = request.query.total;
+//             let listaEventos = [];
+//             for (let i = 0; i < total; i++) {
+//                 listaEventos[i] = result[i];
+//             }
+//             response.send(listaEventos);
+//         });
+//     });
+// });
 
 app.get(`/evento/:IdE`, (request, response) => {
     const eventoId = request.params.IdE;
@@ -188,7 +200,7 @@ app.get(`/clientes/:id`, (request, response) => {
     let clienteId = request.params.id;
     connection.query(`select * from clientes where id='${clienteId}'`, (error, result, fields) => {
         handleSQLError(response, error, result, (result) => {
-            response.send(result);
+            response.send(result[0]);
         });
     });
 });
@@ -249,7 +261,7 @@ app.get(`/mobiliario/:id`, (request, response) => {
     let mobiliarioId = request.params.id;
     connection.query(`select mobiliario.id,mobiliario.nombre, mobiliario.tipo, mobiliario.referencia,mobiliario.estado,salas.nombre as sala from mobiliario,salas where mobiliario.id ='${mobiliarioId}' and salas.id=(select sala_id from mobiliario where id='${mobiliarioId}')`, (error, result, fields) => {
         handleSQLError(response, error, result, (result) => {
-            response.send(result);
+            response.send(result[0]);
         });
     });
 });
@@ -313,7 +325,7 @@ app.get(`/inventario/:id`, (request, response) => {
     let inventarioId = request.params.id;
     connection.query(`select inventario.id,inventario.nombre, inventario.referencia, inventario.tipo, inventario.estado, inventario.marca,clientes.razon_social as cliente from inventario,clientes where inventario.id='${inventarioId}' and clientes.id=(select cliente_id from inventario where id ='${inventarioId}')`, (error, result, fields) => {
         handleSQLError(response, error, result, (result) => {
-            response.send(result);
+            response.send(result[0]);
         });
     });
 });
@@ -325,7 +337,7 @@ app.get(`/inventario/:id`, (request, response) => {
  */
 /**Hacer una query que muestre todos los eventos */
 app.get(`/eventos`, (request, response) => {
-    connection.query(`select eventos.id,eventos.nombre,eventos.tipo,eventos.fecha_inicio,eventos.fecha_fin,eventos.aforo,clientes.razon_social as organizador,salas.nombre as sala from eventos,clientes,salas where clientes.id=(select id from clientes where id=eventos.cliente_id) and salas.id=(select id from salas where id =eventos.sala_id)`, (error, result, fields) => {
+    connection.query(`select eventos.id,eventos.nombre,eventos.tipo,eventos.fecha_inicio,eventos.fecha_fin,eventos.aforo,eventos.evento_imagen,eventos.descripcion,clientes.razon_social as organizador,salas.nombre as sala from eventos,clientes,salas where clientes.id=(select id from clientes where id=eventos.cliente_id) and salas.id=(select id from salas where id =eventos.sala_id)`, (error, result, fields) => {
         handleSQLError(response, error, result, (result) => {
             console.log(result)
             response.send(result);
@@ -346,9 +358,9 @@ app.post(`/eventos/:id`, (request, response) => {
                 handleSQLError(response, error, result, (result) => {
                     salaId = result[0].id;
                     console.log(salaId)
-                    connection.query(`select eventos.nombre, eventos.tipo,eventos.fecha_inicio,eventos.fecha_fin,eventos.aforo,clientes.razon_social as organizador,salas.nombre as sala from eventos,clientes,salas where eventos.id='${eventoId}' and clientes.id=(select id from clientes where id=eventos.cliente_id)and salas.id=(select id from salas where id=eventos.sala_id)`, (error, result, fields) => {
+                    connection.query(`select eventos.nombre, eventos.tipo,eventos.fecha_inicio,eventos.fecha_fin,eventos.aforo,eventos.evento_imagen as imagen,eventos.descripcion,clientes.razon_social as organizador,salas.nombre as sala from eventos,clientes,salas where eventos.id='${eventoId}' and clientes.id=(select id from clientes where id=eventos.cliente_id)and salas.id=(select id from salas where id=eventos.sala_id)`, (error, result, fields) => {
                         handleSQLError(response, error, result, (result) => {
-                            connection.query(`update eventos set nombre='${request.body.nombre}',tipo='${request.body.tipo}',fecha_inicio='${request.body.fecha_inicio}',fecha_fin='${request.body.fecha_fin}',aforo='${request.body.aforo}',cliente_id='${clienteId}',sala_id='${salaId}' where id='${eventoId}'`,(error, result,fields)=>{
+                            connection.query(`update eventos set nombre='${request.body.nombre}',tipo='${request.body.tipo}',fecha_inicio='${request.body.fecha_inicio}',fecha_fin='${request.body.fecha_fin}',aforo='${request.body.aforo}',evento_imagen='${request.body.imagen}',descripcion='${request.body.descripcion}',cliente_id='${clienteId}',sala_id='${salaId}' where id='${eventoId}'`,(error, result,fields)=>{
                                 handleSQLError(response,error,result,(result)=>{
                                     response.send({message:`El evento ${request.body.nombre}, ha sido actualizado con éxito`});
                                 });
@@ -375,7 +387,7 @@ app.post(`/eventos`,(request,response)=>{
                         handleSQLError(response,error,result,(result=>{
                             clienteId=result[0].id;
                             console.log(clienteId);
-                            connection.query(`insert into eventos (nombre,tipo,fecha_inicio,fecha_fin,aforo,cliente_id,sala_id) values ('${request.body.nombre}','${request.body.tipo}','${request.body.fecha_inicio}','${request.body.fecha_fin}','${request.body.aforo}','${clienteId}','${salaId}')`,(error,result,fields)=>{
+                            connection.query(`insert into eventos (nombre,tipo,fecha_inicio,fecha_fin,aforo,evento_imagen,descripcion,cliente_id,sala_id) values ('${request.body.nombre}','${request.body.tipo}','${request.body.fecha_inicio}','${request.body.fecha_fin}','${request.body.aforo}','${request.body.imagen}','${request.body.descripcion}','${clienteId}','${salaId}')`,(error,result,fields)=>{
                                 handleSQLError(response,error,result,(result)=>{
                                     response.send({message:`El evento ${request.body.nombre} ha sido creado con éxito.`});
                                 });
@@ -394,9 +406,9 @@ app.post(`/eventos`,(request,response)=>{
 /**Hacer una query para observar un evento en concreto */
 app.get(`/eventos/:id`,(request,response)=>{
     let eventoId=request.params.id;
-    connection.query(`select eventos.id,eventos.nombre,eventos.tipo,eventos.fecha_inicio,eventos.fecha_fin,eventos.aforo,clientes.razon_social as organizador,salas.nombre as sala from eventos,clientes,salas where eventos.id='${eventoId}' and clientes.id=(select id from clientes where id=eventos.cliente_id) and salas.id=(select id from salas where id=eventos.sala_id)`,(error,result,fields)=>{
+    connection.query(`select eventos.id,eventos.nombre,eventos.tipo,eventos.fecha_inicio,eventos.fecha_fin,eventos.aforo,eventos.evento_imagen,eventos.descripcion,clientes.razon_social as organizador,salas.nombre as sala from eventos,clientes,salas where eventos.id='${eventoId}' and clientes.id=(select id from clientes where id=eventos.cliente_id) and salas.id=(select id from salas where id=eventos.sala_id)`,(error,result,fields)=>{
         handleSQLError(response,error,result,(result)=>{
-            response.send(result);
+            response.send(result[0]);
         });
     });
 });
@@ -421,9 +433,7 @@ app.get(`/eventos/:id`,(request,response)=>{
 
 
 
-/**
- * Final endpoints Mobiliario----------------------------------------------------------------------------------------------------------------
- */
+
 
 app.listen(8000, () => {
     console.log(`Server up and running!!`);
