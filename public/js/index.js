@@ -1,5 +1,5 @@
 const host='http://localhost:8000';
-/**Hacemos una llamada a base de datos y pintamos el html con los datos de eventos */
+/*--------------------Hacemos una llamada a base de datos y pintamos el html con los datos de eventos-------------------------------*/
 
 window.addEventListener('load',(eventos)=>{
 });
@@ -19,7 +19,7 @@ let eventos=()=>{
         console.log(response);
     });    
 };
-/* Seleccionamos un solo evento y en base de datos recogemos sus datos y volvemos a pintar el html*/
+/*------------Seleccionamos un solo evento y en base de datos recogemos sus datos y volvemos a pintar el html----------------------*/
 let carruselClick=(eventoId)=>{
     console.log(eventoId);
     fetch(`${host}/eventos/${eventoId}`)
@@ -48,3 +48,17 @@ let carruselClick=(eventoId)=>{
 
 };
 eventos();
+
+
+let user=localStorage.getItem('nombre');
+ console.log(localStorage)
+if(localStorage.length !=0){   
+let usuarioLogin=document.getElementById('usuarioLogin');
+usuarioLogin.innerHTML=`<p class="text-white m-0">${user}</p> <buttom class="btn btn-primary" onclick="logout()">Logout</buttom>`;
+}
+
+
+let logout=()=>{
+localStorage.clear();
+window.location.href="/html/index.html";
+};

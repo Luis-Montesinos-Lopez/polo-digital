@@ -10,14 +10,15 @@
       integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
       crossorigin="anonymous"
     />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
   </head>
   <body>
     <nav
-      class="navbar navbar-expand-lg navbar bg-primary mb-3"
+      class="navbar navbar-expand-lg navbar bg-primary mb-5 p-4"
       data-bs-theme="dark"
     >
       <div class="container-fluid">
-        <a class="navbar-brand" href="/public/html/index.html">Polo Digital</a>
+        <a class="navbar-brand" href="/html/index.html">Polo Digital</a>
         <button
           class="navbar-toggler"
           type="button"
@@ -35,7 +36,7 @@
               <a
                 class="nav-link active"
                 aria-current="page"
-                href="/public/html/index.html"
+                href="/html/index.html"
                 >Home</a
               >
             </li>
@@ -53,16 +54,16 @@
               <a class="nav-link active" href="eventos.html">Eventos</a>
             </li>
           </ul>
-          <div class="d-flex gap-3">
+          <div class="d-flex gap-3 align-items-center justify-content-around" id="usuarioLogin">
             <a
               class="btn btn-primary"
-              href="/public/html/login.html"
+              href="/html/login.html"
               role="button"
               >Login</a
             >
             <a
               class="btn btn-primary"
-              href="/public/html/login.html"
+              href="/html/login.html"
               role="button"
               >Registro</a
             >
@@ -71,18 +72,10 @@
       </div>
     </nav>
     <!--Final navbar-->
-    <div>
-      <style>
-        table {
-          width: 100%;
-        }
-        th,
-        td {
-          width: 20%;
-        }
-      </style>
-      <table class="table table-success table-striped table-hover my-5">
-        <tr>
+    <div class="m-3">
+     
+      <table class="table table-success table-striped table-hover my-5 ml-5">
+        <tr class="text-center">
           <th>
             <p>Nombre</p>
           </th>
@@ -98,104 +91,50 @@
           <th>
             <p>Sala</p>
           </th>
+          <th id="add">
+          </th>
+          <th>
+          </th>
         </tr>
         <!-----------------------------------------------Final encabezado tabla---------------------------------------------------------->
-        <tr>
-          <td>
-            <p>silla_01</p>
-          </td>
-          <td>
-            <p>mueble</p>
-          </td>
-          <td>
-            <p>s001</p>
-          </td>
-          <td>
-            <p>1</p>
-          </td>
-          <td>
-            <p>3</p>
-          </td>
-       
-        </tr>
-        <!-----------------------------------------------Final elemento 1 tabla--------------------------------------------------------->
-        <tr>
-          <td>
-            <p>mesa_01 </p>
-          </td>
-          <td>
-            <p>mueble</p>
-          </td>
-          <td>
-            <p>m001</p>
-          </td>
-          <td>
-            <p>1</p>
-          </td>
-          <td>
-            <p>2</p>
-          </td>
-        
-        </tr>
-        <!-----------------------------------------------Final elemento 2 tabla--------------------------------------------------------->
-        <tr>
-          <td>
-            <p>banco</p>
-          </td>
-          <td>
-            <p>mueble</p>
-          </td>
-          <td>
-            <p>b003</p>
-          </td>
-          <td>
-            <p>1</p>
-          </td>
-          <td>
-            <p>1</p>
-          </td>
-         
-        </tr>
-        <!-----------------------------------------------Final elemento 3 tabla--------------------------------------------------------->
-        <tr>
-          <td>
-            <p>silla_02</p>
-          </td>
-          <td>
-            <p>mueble</p>
-          </td>
-          <td>
-            <p>s002</p>
-          </td>
-          <td>
-            <p>0</p>
-          </td>
-          <td>
-            <p>4</p>
-          </td>
-          
-        </tr>
-        <!-----------------------------------------------Final elemento 4 tabla--------------------------------------------------------->
-        <tr>
-          <td>
-            <p>cama_01</p>
-          </td>
-          <td>
-            <p>mueble</p>
-          </td>
-          <td>
-            <p>c001</p>
-          </td>
-          <td>
-            <p>0</p>
-          </td>
-          <td>
-            <p>1</p>
-          </td>
-        </tr>
-        <!-----------------------------------------------Final elemento 5 tabla--------------------------------------------------------->
+        <tbody id="container" class="text-center">
+
+        </tbody>
       </table>
     </div>
+    <div id="edit" class="m-3 d-none text-center">
+      <div class="d-flex align-items-center justify-content-center gap-3"">
+       <div class="d-flex gap-3">
+         <div class="mb-3 d-none">
+           <label for="id" class="form-label">Id</label>
+           <input type="text" class="form-control" id="id">
+         </div>
+       <div class="mb-3">
+         <label for="nombre" class="form-label">Nombre</label>
+         <input type="text" class="form-control" id="nombre">
+       </div>
+       <div class="mb-3">
+         <label for="tipo" class="form-label">Tipo</label>
+         <input type="text" class="form-control" id="tipo">
+       </div>
+       <div class="mb-3">
+         <label for="referencia" class="form-label">Referencia</label>
+         <input type="text" class="form-control" id="referencia">
+       </div>
+       <div class="mb-3">
+         <label for="estado" class="form-label">Estado</label>
+         <input type="text" class="form-control" id="estado">
+       </div>
+       <div class="mb-3">
+         <label for="sala" class="form-label">Sala</label>
+         <input type="text" class="form-control" id="sala">
+       </div>
+      </div>
+      <div class=" pt-2" id="btn"></div>
+     
+   </div>
+  </div>
+    <!----------------------------------------------------Final tabla---------------------------------------------------------------------->
     <footer class="bg-primary">
       <div class="d-flex justify-content-between align-items-center gap-5 p-4">
         <div class="d-flex flex-column justify-content-around">
@@ -250,5 +189,6 @@
       integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
       crossorigin="anonymous"
     ></script>
+    <script src="/js/mobiliario.js"></script>
   </body>
 </html>

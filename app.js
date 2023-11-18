@@ -84,6 +84,15 @@ app.get(`/usuarios`,(request,response)=>{
         });
     });
 });
+app.get(`/usuario/:email`,(request,response)=>{
+    let email=request.params.email;
+    connection.query(`SELECT nombre FROM empleadosclientes WHERE usuario_id =(SELECT id FROM usuarios WHERE email='${email}')`,(error,result,fields)=>{
+        handleSQLError(response,error,result,(result)=>{
+            response.send(result[0]);
+            console.log(result)
+        });
+    });
+})
 /**
  * Endpoints para Registros/login-----------------------------------------------------------------------------------------------------
  */
@@ -99,7 +108,7 @@ app.post(`/login`, (request, response) => {
                     });
                 } else {
                     response.send({
-                        message: `Usuario logueado: ${request.body.email}`,
+                        message: `Usuario logueado`,
                     });
                 }
             });
@@ -174,7 +183,7 @@ app.post(`/clientes/:id`, (request, response) => {
     console.log(clienteId);
     connection.query(`update clientes set razon_social='${request.body.razon_social}',cif='${request.body.cif}',sector='${request.body.sector}', telefono='${request.body.telefono}', numero_empleados='${request.body.numero_empleados}' where id='${clienteId}'`, (error, result, fields) => {
         handleSQLError(response, error, result, (result) => {
-            response.send({ message: `Cliente ${request.body.razon_social} actualizado con éxito.` });
+            response.send({ message: `Cliente actualizado con éxito.` });
         })
     });
 });
@@ -186,11 +195,11 @@ app.post(`/clientes`, (request, response) => {
             if (result.length == 0) {
                 connection.query(`insert into clientes (razon_social,cif, sector, telefono, numero_empleados) values ('${request.body.razon_social}','${request.body.cif}','${request.body.sector}','${request.body.telefono}','${request.body.numero_empleados}')`, (error, result, fields) => {
                     handleSQLError(response, error, result, (result) => {
-                        response.send({ message: `Cliente ${request.body.razon_social} registrado correctamente` })
+                        response.send({ message: `Cliente registrado correctamente` })
                     })
                 });
             } else {
-                response.send({ message: `El cliente ${request.body.razon_social} ya se encuentra registrado` })
+                response.send({ message: `El cliente ya se encuentra registrado` })
             }
         });
     });
@@ -204,6 +213,15 @@ app.get(`/clientes/:id`, (request, response) => {
         });
     });
 });
+/*-----------------------------------------Hacer un query para eliminar un cliente---------------------------------------------------------------------------------------*/
+app.post(`/eliminarclientes/:id`,(request,response)=>{
+    let clienteId=request.params.id;
+    connection.query(`delete from clientes where id=${clienteId}`,(error,result,fields)=>{
+        handleSQLError(response,error,result,(result)=>{
+            response.send({message: `El cliente ha sido eliminado.`});
+        });
+    });
+});
 /**
  * Final endpoints clientes--------------------------------------------------------------------------------------
  */
@@ -211,7 +229,7 @@ app.get(`/clientes/:id`, (request, response) => {
  * Endpoints Mobiliario--------------------------------------------------------------------------------------------
  */
 /**Hacer una query para recibir listado mobiliario */
-app.get(`/mobiliario`, (request, response) => {
+app.get(`/mobiliarios`, (request, response) => {
     connection.query(`select mobiliario.id,mobiliario.nombre,mobiliario.tipo,mobiliario.referencia,mobiliario.estado,salas.nombre as sala from mobiliario,salas where salas.id=(select id from salas where id=mobiliario.sala_id)`, (error, result, fields) => {
         handleSQLError(response, error, result, (result) => {
             response.send(result);
@@ -219,7 +237,7 @@ app.get(`/mobiliario`, (request, response) => {
     });
 });
 /**Hacer un query para modificar la tabla de mobiliario */
-app.post(`/mobiliario/:id`, (request, response) => {
+app.post(`/mobiliarios/:id`, (request, response) => {
     let mobiliarioId = request.params.id;
     let salaId = 0;
 
@@ -228,14 +246,14 @@ app.post(`/mobiliario/:id`, (request, response) => {
             salaId = result[0].id;
             connection.query(`update mobiliario set nombre='${request.body.nombre}',tipo='${request.body.tipo}',referencia='${request.body.referencia}', estado='${request.body.estado}', sala_id='${salaId}' where id='${mobiliarioId}'`, (error, result, fields) => {
                 handleSQLError(response, error, result, (result) => {
-                    response.send({ message: `El mobiliario ${request.body.nombre} ha sido actualizado con éxito.` });
+                    response.send({ message: `El mobiliario ha sido actualizado con éxito.` });
                 });
             });
         });
     });
 });
 /**Hacer un query para registrar un nuevo mobiliario */
-app.post(`/mobiliario`, (request, response) => {
+app.post(`/mobiliarios`, (request, response) => {
     let salaId = 0;
     connection.query(`select referencia from mobiliario where referencia='${request.body.referencia}'`, (error, result, fields) => {
         handleSQLError(response, error, result, (result) => {
@@ -245,23 +263,31 @@ app.post(`/mobiliario`, (request, response) => {
                         salaId = result[0].id;
                         connection.query(`insert into mobiliario (nombre,tipo,referencia,estado, sala_id) values ('${request.body.nombre}','${request.body.tipo}','${request.body.referencia}','${request.body.estado}','${salaId}')`, (error, result, fields) => {
                             handleSQLError(response, error, result, (result) => {
-                                response.send({ message: `El item ${request.body.nombre}'ha sido creado con éxito en mobiliario.` });
+                                response.send({ message: `El item ha sido creado con éxito en mobiliario.` });
                             })
                         })
                     })
                 })
             } else {
-                response.send({ message: `El item ${request.body.nombre} ya existe en mobiliario.` });
+                response.send({ message: `El item ya existe en mobiliario.` });
             }
         });
     });
 });
 /**Hacer un query para obtener los datos de un mobiliario concreto por id */
-app.get(`/mobiliario/:id`, (request, response) => {
+app.get(`/mobiliarios/:id`, (request, response) => {
     let mobiliarioId = request.params.id;
     connection.query(`select mobiliario.id,mobiliario.nombre, mobiliario.tipo, mobiliario.referencia,mobiliario.estado,salas.nombre as sala from mobiliario,salas where mobiliario.id ='${mobiliarioId}' and salas.id=(select sala_id from mobiliario where id='${mobiliarioId}')`, (error, result, fields) => {
         handleSQLError(response, error, result, (result) => {
             response.send(result[0]);
+        });
+    });
+});
+app.post(`/deleteMobiliario/:id`,(request,response)=>{
+    let mobiliarioID=request.params.id;
+    connection.query(`delete  from mobiliario where id=${mobiliarioID}`,(error,result,fields)=>{
+        handleSQLError(response,error,result,(result)=>{
+            response.send({message:`El item ha sido eliminado con éxito`});
         });
     });
 });
@@ -273,7 +299,7 @@ app.get(`/mobiliario/:id`, (request, response) => {
  */
 
 /**Hacer un query que seleccione los inventarios */
-app.get(`/inventario`, (request, response) => {
+app.get(`/inventarios`, (request, response) => {
     connection.query(`select inventario.id,inventario.nombre,inventario.referencia,inventario.tipo,inventario.estado,inventario.marca,clientes.razon_social as asignado from inventario,clientes where clientes.id=(select id from clientes where id=inventario.cliente_id)`, (error, result, fields) => {
         handleSQLError(response, error, result, (result) => {
             response.send(result);
@@ -281,7 +307,7 @@ app.get(`/inventario`, (request, response) => {
     });
 });
 /**Hacer una query para updatear un inventario */
-app.post(`/inventario/:id`, (request, response) => {
+app.post(`/inventarios/:id`, (request, response) => {
     let inventarioId = request.params.id;
     let clienteId = 0;
 
@@ -290,7 +316,7 @@ app.post(`/inventario/:id`, (request, response) => {
             clienteId = result[0].id;
             connection.query(`update inventario set nombre='${request.body.nombre}', referencia='${request.body.referencia}',tipo='${request.body.tipo}',estado='${request.body.estado}', marca='${request.body.marca}', cliente_id='${clienteId}' where id ='${inventarioId}'`, (error, result, fields) => {
                 handleSQLError(response, error, result, (result) => {
-                    response.send({ message: `El inventario ${request.body.nombre} ha sido actualizado` });
+                    response.send({ message: `El inventario ha sido actualizado` });
                 });
             });
         });
@@ -298,7 +324,7 @@ app.post(`/inventario/:id`, (request, response) => {
 });
 /**Hacer un query que ingrese un nuevo item en inventario */
 
-app.post(`/inventario`, (request, response) => {
+app.post(`/inventarios`, (request, response) => {
     let clienteId = 0;
     connection.query(`Select referencia from inventario where referencia='${request.body.referencia}'`, (error, result, fields) => {
         handleSQLError(response, error, result, (result) => {
@@ -308,24 +334,33 @@ app.post(`/inventario`, (request, response) => {
                         clienteId = result[0].id;
                         connection.query(`insert into inventario (nombre, referencia, tipo, estado,marca, cliente_id) values ('${request.body.nombre}','${request.body.referencia}','${request.body.tipo}','${request.body.estado}','${request.body.marca}','${clienteId}')`, (error, result, fields) => {
                             handleSQLError(response, error, result, (result) => {
-                                response.send({ message: `El item ${request.body.nombre} ha sido registrado con éxito en el inventario.` });
+                                response.send({ message: `El item  ha sido registrado con éxito en el inventario.` });
                             });
                         });
                     });
                 });
             } else {
-                response.send({ message: `El item ${request.body.nombre} ya se encuentra registrado en inventario` })
+                response.send({ message: `El item ya se encuentra registrado en inventario` })
             };
         });
     });
 });
 /**Hacer un query para seleccionar un inventario en concreto y mostrarlo */
 
-app.get(`/inventario/:id`, (request, response) => {
+app.get(`/inventarios/:id`, (request, response) => {
     let inventarioId = request.params.id;
     connection.query(`select inventario.id,inventario.nombre, inventario.referencia, inventario.tipo, inventario.estado, inventario.marca,clientes.razon_social as cliente from inventario,clientes where inventario.id='${inventarioId}' and clientes.id=(select cliente_id from inventario where id ='${inventarioId}')`, (error, result, fields) => {
         handleSQLError(response, error, result, (result) => {
             response.send(result[0]);
+        });
+    });
+});
+/*--------------------------------------------------Eliminar un elemento de inventario------------------------------------------------*/
+app.post(`/eliminarInventarios/:id`,(request,response)=>{
+    let inventarioId=request.params.id;
+    connection.query(`delete from inventario where id=${inventarioId}`,(error,result,fields)=>{
+        handleSQLError(response,error,result,(result)=>{
+            response.send({message: `El producto ha sido eliminado.`});
         });
     });
 });
@@ -415,26 +450,6 @@ app.get(`/eventos/:id`,(request,response)=>{
 /**
  * Final endpoints Eventos----------------------------------------------------------------------------------------------------------------
  */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 app.listen(8000, () => {
-    console.log(`Server up and running!!`);
+    console.log(`Server up and running on 8000!!`);
 });
