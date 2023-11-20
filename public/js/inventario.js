@@ -2,6 +2,8 @@ const host='http://localhost:8000';
 let añadirBoton=false;
 let mostrarBoton=false;
 let updateBoton=false;
+let user=localStorage.getItem('nombre');
+let permisos=localStorage.getItem('permisos');
 /*--------------------------------------------------Funciones Útiles-------------------------------------------------------------------------------*/
 let showOptions=(value)=>{
     let valueBtn=value;
@@ -17,11 +19,9 @@ let showOptions=(value)=>{
         mostrarBoton=false;
     };
 };
-let user=localStorage.getItem('nombre');
- console.log(localStorage)
 if(localStorage.length !=0){   
 let usuarioLogin=document.getElementById('usuarioLogin');
-usuarioLogin.innerHTML=`<p class="text-white m-0">${user}</p> <buttom class="btn btn-primary" onclick="logout()">Logout</buttom>`;
+usuarioLogin.innerHTML=`<a href="/html/usuarios.html" class="text-white m-0 text-decoration-none">${user}</a> <buttom class="btn btn-primary" onclick="logout()">Logout</buttom>`;
 };
 let logout=()=>{
 localStorage.clear();
@@ -33,8 +33,8 @@ let enseñarInventario=()=>{
     .then((response)=>{
         return response.json();
     }).then((json)=>{
-        console.log(json)
-       let inventario=document.getElementById('container');
+        let inventario=document.getElementById('container');
+        if(permisos==1){
        for(let i=0;i<json.length;i++){
         inventario.innerHTML+=`<tr><td>${json[i].nombre}</td><td>${json[i].referencia}</td><td>${json[i].tipo}</td>
         <td>${json[i].estado}</td><td>${json[i].marca}</td><td>${json[i].asignado}</td>
@@ -44,7 +44,14 @@ let enseñarInventario=()=>{
        };
        let add=document.getElementById('add');
         add.innerHTML=`<button class="btn btn-primary btn-sm" onclick="showInventario()"><i class="bi bi-plus-square"></i></button>`
-    }).catch((error)=>{
+        }else{
+       for(let i=0;i<json.length;i++){
+        inventario.innerHTML+=`<tr><td>${json[i].nombre}</td><td>${json[i].referencia}</td><td>${json[i].tipo}</td>
+        <td>${json[i].estado}</td><td>${json[i].marca}</td><td>${json[i].asignado}</td>
+        <td><td></td></td></tr>`
+       };
+        };   
+       }).catch((error)=>{
         console.error(error);
     });
 };

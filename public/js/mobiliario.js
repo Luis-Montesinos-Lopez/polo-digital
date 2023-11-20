@@ -2,6 +2,8 @@ const host=`http://localhost:8000`;
 let mostrarBoton=false;
 let showBoton=false;
 let editBoton=false;
+let user=localStorage.getItem('nombre');
+let permisos=localStorage.getItem('permisos');
 
 /*-------------------------------------------------------Mostrar Mobiliario------------------------------------------------------------------*/
 let mostrarMobiliario=()=>{
@@ -9,17 +11,27 @@ let mostrarMobiliario=()=>{
     .then((response)=>{
         return response.json();
     }).then((json)=>{
-        let inventario=document.getElementById('container');
+        let mobiliario=document.getElementById('container');
+        if(permisos==1){
+            
+            for(let i=0;i<json.length;i++){
+                mobiliario.innerHTML+=`<tr><td>${json[i].nombre}</td><td>${json[i].tipo}</td><td>${json[i].referencia}</td>
+                <td>${json[i].estado}</td><td>${json[i].sala}</td>
+                <td><buttom id="shw${json[i].id}"class="btn btn-sm btn-primary" onclick="showOptions(${json[i].id})"><i class="bi bi-three-dots-vertical"></i></buttom></td>
+                <td><buttom id="upd${json[i].id}" class="btn btn-sm btn-primary d-none" onclick="editMobiliario(${json[i].id})"><i class="bi bi-pencil"></i></buttom>
+                <buttom id="del${json[i].id}" class="btn btn-sm btn-primary d-none" onclick="deleteMobiliario(${json[i].id})"><i class="bi bi-trash3"></i></buttom></td></tr>`
+            };
+            let add=document.getElementById('add');
+            add.innerHTML=`<button class="btn btn-primary btn-sm" onclick="showMobiliario()"><i class="bi bi-plus-square"></i></button>`
+        }else{
+            
         for(let i=0;i<json.length;i++){
-            inventario.innerHTML+=`<tr><td>${json[i].nombre}</td><td>${json[i].tipo}</td><td>${json[i].referencia}</td>
+            mobiliario.innerHTML+=`<tr><td>${json[i].nombre}</td><td>${json[i].tipo}</td><td>${json[i].referencia}</td>
             <td>${json[i].estado}</td><td>${json[i].sala}</td>
-            <td><buttom id="shw${json[i].id}"class="btn btn-sm btn-primary" onclick="showOptions(${json[i].id})"><i class="bi bi-three-dots-vertical"></i></buttom></td>
-            <td><buttom id="upd${json[i].id}" class="btn btn-sm btn-primary d-none" onclick="editMobiliario(${json[i].id})"><i class="bi bi-pencil"></i></buttom>
-            <buttom id="del${json[i].id}" class="btn btn-sm btn-primary d-none" onclick="deleteMobiliario(${json[i].id})"><i class="bi bi-trash3"></i></buttom></td></tr>`
+            <td><td></td></td></tr>`
         };
-        let add=document.getElementById('add');
-        add.innerHTML=`<button class="btn btn-primary btn-sm" onclick="showMobiliario()"><i class="bi bi-plus-square"></i></button>`
-    }).catch((error)=>{
+        };       
+       }).catch((error)=>{
         console.error(error);
     });
 };
@@ -158,11 +170,10 @@ let showOptions=(valorID)=>{
         showBoton=false;
     };
 };
-let user=localStorage.getItem('nombre');
  console.log(localStorage)
 if(localStorage.length !=0){   
 let usuarioLogin=document.getElementById('usuarioLogin');
-usuarioLogin.innerHTML=`<p class="text-white m-0">${user}</p> <buttom class="btn btn-primary" onclick="logout()">Logout</buttom>`;
+usuarioLogin.innerHTML=`<a href="/html/usuarios.html" class="text-white m-0 text-decoration-none">${user}</a> <buttom class="btn btn-primary" onclick="logout()">Logout</buttom>`;
 };
 let logout=()=>{
 localStorage.clear();

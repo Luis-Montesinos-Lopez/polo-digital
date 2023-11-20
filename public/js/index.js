@@ -54,7 +54,7 @@ let user=localStorage.getItem('nombre');
  console.log(localStorage)
 if(localStorage.length !=0){   
 let usuarioLogin=document.getElementById('usuarioLogin');
-usuarioLogin.innerHTML=`<p class="text-white m-0">${user}</p> <buttom class="btn btn-primary" onclick="logout()">Logout</buttom>`;
+usuarioLogin.innerHTML=`<a href="/html/usuarios.html" class="text-white m-0 text-decoration-none">${user}</a> <buttom class="btn btn-primary" onclick="logout()">Logout</buttom>`;
 }
 
 

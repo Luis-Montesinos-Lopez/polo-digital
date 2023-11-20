@@ -2,13 +2,16 @@ const host=`http://localhost:8000`;
 let mostrarBoton=false;
 let showBoton=false;
 let editBoton=false;
+let user=localStorage.getItem('nombre');
+let permisos=localStorage.getItem('permisos');
 /*--------------------------------------------------Mostrar clientes------------------------------------------------------------------------------------------------------- */
 let mostrarClientes=()=>{
 fetch(`${host}/clientes`)
 .then((response)=>{
     return response.json();
 }).then((json)=>{
-    console.log(json)
+    if(permisos==1){
+        console.log(json)
     let clientes=document.getElementById('container');
     for(let i=0;i<json.length;i++){
         clientes.innerHTML+=`<tr><td>${json[i].razon_social}</td><td>${json[i].cif}</td><td>${json[i].sector}</td>
@@ -19,6 +22,15 @@ fetch(`${host}/clientes`)
     };
     let add=document.getElementById('add');
     add.innerHTML=`<button class="btn btn-primary btn-sm" onclick="addClient()"><i class="bi bi-plus-square"></i></button>`
+    }else{
+        let clientes=document.getElementById('container');
+    for(let i=0;i<json.length;i++){
+        clientes.innerHTML+=`<tr><td>${json[i].razon_social}</td><td>${json[i].cif}</td><td>${json[i].sector}</td>
+        <td>${json[i].telefono}</td><td>${json[i].numero_empleados}</td>
+        <td></td><td></td></tr>`
+    };
+    }
+    
 }).catch((error)=>{
     console.error(error);
 });
@@ -52,7 +64,7 @@ let regClient=()=>{
     let sector=document.getElementById('sector').value;
     let telefono= document.getElementById('telefono').value;
     let empleados= document.getElementById('empleados').value;
-    fetch(`${host}/clientes`,{
+       fetch(`${host}/clientes`,{
         method:'POST',
         headers:{
             'Content-Type':'application/json',
@@ -106,6 +118,7 @@ let updateClient=()=>{
     let sector=document.getElementById('sector').value;
     let telefono= document.getElementById('telefono').value;
     let empleados= document.getElementById('empleados').value;
+   
     
     fetch(`${host}/clientes/${id}`,{
         method:'POST',
@@ -163,11 +176,12 @@ delbtn.classList.add('d-none');
 mostrarBoton=false;
 };
 };
-let user=localStorage.getItem('nombre');
+
  console.log(localStorage)
 if(localStorage.length !=0){   
 let usuarioLogin=document.getElementById('usuarioLogin');
-usuarioLogin.innerHTML=`<p class="text-white m-0">${user}</p> <buttom class="btn btn-primary" onclick="logout()">Logout</buttom>`;
+usuarioLogin.innerHTML=`<a href="/html/usuarios.html" class="text-white m-0 text-decoration-none">${user}</a>
+ <buttom class="btn btn-primary" onclick="logout()">Logout</buttom>`;
 };
 let logout=()=>{
     localStorage.clear();

@@ -86,7 +86,7 @@ app.get(`/usuarios`,(request,response)=>{
 });
 app.get(`/usuario/:email`,(request,response)=>{
     let email=request.params.email;
-    connection.query(`SELECT nombre FROM empleadosclientes WHERE usuario_id =(SELECT id FROM usuarios WHERE email='${email}')`,(error,result,fields)=>{
+    connection.query(`SELECT nombre,permisos, id FROM empleadosclientes WHERE usuario_id =(SELECT id FROM usuarios WHERE email='${email}')`,(error,result,fields)=>{
         handleSQLError(response,error,result,(result)=>{
             response.send(result[0]);
             console.log(result)
@@ -144,7 +144,7 @@ app.post(`/registro`, (request, response) => {
                             console.log(result);
                             cliente_Id = result[0].id;
                             console.log(cliente_Id);
-                            connection.query(`insert into empleadosclientes (nombre,apellidos,usuario_id,cliente_id,dni,telefono) values ('${request.body.nombre}','${request.body.apellidos}','${nuevoUsuario_Id}','${cliente_Id}','${request.body.dni}','${request.body.telefono}')`, (error, result, fields) => {
+                            connection.query(`insert into empleadosclientes (nombre,apellidos,usuario_id,cliente_id,dni,telefono,foto,puesto) values ('${request.body.nombre}','${request.body.apellidos}','${nuevoUsuario_Id}','${cliente_Id}','${request.body.dni}','${request.body.telefono}','${request.body.foto}','${request.body.puesto}')`, (error, result, fields) => {
                                 handleSQLError(response, error, result, (result) => {
                                     response.send({ message: `Usuario registrado correctamente` });
                                 })
@@ -449,6 +449,25 @@ app.get(`/eventos/:id`,(request,response)=>{
 });
 /**
  * Final endpoints Eventos----------------------------------------------------------------------------------------------------------------
+ */
+/**
+ *----------------------------------------------------Endpoint manejo usuarios------------------------------------------------------------
+ */
+/**Buscar un usuario concreto*/
+app.get(`/empleado/:id`,(request,response)=>{
+    let usuarioId=request.params.id;
+    connection.query(`SELECT empleadosclientes.nombre,empleadosclientes.apellidos,empleadosclientes.dni,empleadosclientes.telefono,empleadosclientes.foto,empleadosclientes.puesto,usuarios.email,usuarios.password,clientes.razon_social as empresa
+    FROM empleadosclientes,usuarios,clientes WHERE empleadosclientes.id='${usuarioId}' AND usuarios.id=(SELECT usuario_id FROM empleadosclientes WHERE id='${usuarioId}') AND clientes.id=(SELECT cliente_id FROM empleadosclientes WHERE id='${usuarioId}')
+   `,(error,result,fields)=>{
+    handleSQLError(response,error,result,(result)=>{
+        response.send(result[0]);
+    });
+   });
+});
+
+
+/**
+ *----------------------------------------------------Final endpoint manejo usuarios-----------------------------------------------------------------------------
  */
 app.listen(8000, () => {
     console.log(`Server up and running on 8000!!`);
